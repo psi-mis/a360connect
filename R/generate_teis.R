@@ -1,6 +1,6 @@
 #' Generate TEIs from A360 Events Program
 #'
-#' Generate Tracked Entity Instances (TEIs) from A360 Attendance & Service Log,
+#' @description Generate Tracked Entity Instances (TEIs) from A360 Attendance & Service Log,
 #' an event program.
 #' @details \code{generate_teis} pulls A360 events from the Attendance & Service Log,
 #' checks for the latest unique events, and converts them into tracked entity
@@ -12,42 +12,14 @@
 #' @return An S3 object of the generated TEIs with possible duplicates if found.
 #' @examples
 #' generate_teis(baseurl = "", program_id = "x")
-#' @name generate_teis
 #' @export
+#' @noRd
 generate_teis <- function(baseurl = NULL, program_id = NULL, warn_duplicates = T){
   # to do
 
 }
 
-#'Pull Events
-#'@importFrom httr GET content
-#'@importFrom utils URLencode
-#'@inheritParams generate_teis
-pull_events <- function(baseurl = NULL, program_id = NULL, startDate = NULL, endDate = NULL){
-  url <- events_endpoint(baseurl = baseurl, program_id = program_id, startDate = startDate, endDate = endDate)
 
-  events_res <- GET(URLencode(url), ua, timeout)
-
-  check_response(events_res)
-
-  parsed_events <- fromJSON(
-   content(res,"text"),
-   simplifyVector = T
-   )
-
-  structure(
-    list(content = parsed_events,
-         endpoint = url,
-         response = resp), class ="psi-mis_api"
-  )
-
-}
-
-print.pull_events <- function(x, ...){
-  cat(sprintf("PSI-MIS <%s>", x$endpoint))
-  head(x$content$events, 10)
-  invisible(x)
-}
 
 
 #' Transform event data values
@@ -73,24 +45,19 @@ transform_event_datavalues <- function(events){
                   status = x$status)
   })
 
-  dplyr::bind_rows(transformed_datavalues)
+  dv <- dplyr::bind_rows(transformed_datavalues)
+  # rename
+  names(dv) <- plyr::mapvalues(names(dv),
+                               from = des$id,
+                               to = des$name, warn_missing = F)
+  dv
 }
 
 
 
 
-events_endpoint <- function(baseurl = NULL, program_id = NULL, startDate = NULL, endDate = NULL){
-  if (!is.null(baseurl) && !is.null(program_id)){
-    url <- paste0(baseurl, "api/events?paging=false&program=", program_id)
-    if (!is.null(startDate)){
-      url <- paste0(url,startDate, collapse = "&")
-    }
-    if (!is.null(endDate)){
-      url <- paste0(url,endDate, collapse = "&")
-    }
-    url
-  }else{
-    stop("a360connect: atleast both the baseurl and the program id must be specified", call. = F)
-  }
-}
+
+
+
+
 
