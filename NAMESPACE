@@ -2,6 +2,7 @@
 
 export(generate_teis)
 importFrom(httr,GET)
+importFrom(httr,authenticate)
 importFrom(httr,content)
 importFrom(httr,http_error)
 importFrom(httr,http_type)
