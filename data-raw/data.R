@@ -1,5 +1,6 @@
 library(magrittr)
 library(ggplot2)
+library(httr)
 
 des <- httr::GET(paste0(Sys.getenv("CLONE"), "api/programStages/UNcBM7ZAXsO?fields=programStageDataElements[dataElement[id,name]]"),
                  authenticate(Sys.getenv("C_USER"), Sys.getenv("C_PASS"))) %>%
@@ -8,10 +9,16 @@ des <- httr::GET(paste0(Sys.getenv("CLONE"), "api/programStages/UNcBM7ZAXsO?fiel
   .$programStageDataElements %>%
   .$dataElement
 
-#usethis::use_data(des, internal = T)
+short_name <- strsplit(des$name, " - ")
+short_name <- rapply(short_name, function(x) tail(x,1)) %>%
+  trimws(., "both")
+des$name <- short_name
+
+
+#usethis::use_data(des, internal = T, overwrite = T)
 
 a360ngdata <- readxl::read_xlsx("/Users/isaiahnyabuto/Documents/Workspace/A360/NG Data/A360 Data/current_program_a360_full_data-edited.xlsx",
-                                sheet = "current_program_a360_full_data")
+                                sheet = "current_program_a360_full_data", col_types = "text")
 
 
 a360ngdata %>% names(.)
@@ -64,5 +71,16 @@ a360ngdata2 <- data.table::as.data.table(a360ngdata)
 purrr::map(a360ngdata$`Girl ID`, ~a360ngdata2[`Girl ID` == .x]) -> d3
 
 # I realize only 22 % of clients have a close to a valid phone number
-a360ngdata2[!is.na(`Phone Number`) | nchar(`Phone Number`) > 9 ]
+a360ngdata2[(!is.na(`Phone Number`) & nchar(`Phone Number`) >= 10)] %>% nrow(.)
+
+## Filter clients by Girl ID,
+#' -> Does the any of the records have a phone number?
+#' > Identify unique clients;
+#' ----- is unique by name of the girl & has a phone number  ----> store a side
+#' --- If names are duplicate duplicates
+#' ----------> Filter where name is duplicated
+#' ---------------> check if any has a phone number, if not ignore.
+#' ----------------------> if phone number is present, overwrite in the column & sort by date of service provision
+#' -----------------------------> return the latest
+#' filter repeat users
 
