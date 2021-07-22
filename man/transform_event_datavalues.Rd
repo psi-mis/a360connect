@@ -6,6 +6,9 @@
 \usage{
 transform_event_datavalues(events)
 }
+\arguments{
+\item{events}{A data.frame object.}
+}
 \description{
 Transform event data values
 }
