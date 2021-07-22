@@ -24,7 +24,7 @@ generate_teis <- function(baseurl = NULL, program_id = NULL, warn_duplicates = T
 
 #' Transform event data values
 #'
-#' @param events
+#' @param events A data.frame object.
 transform_event_datavalues <- function(events){
   # flatten the data values
   new_datavalues <- purrr::map(events$dataValues, function(x){
