@@ -42,7 +42,7 @@ pull_events <- function(baseurl = NULL, program_id = NULL,
 }
 
 print.pull_events <- function(x, ...){
-  cat(sprintf("PSI-MIS <%s>", x$endpoint))
-  head(x$content$events, 10)
+  cat(sprintf("PSI-MIS <%s>\n", x$endpoint))
+  str(x$content, list.len = 5, vec.len = 1)
   invisible(x)
 }
