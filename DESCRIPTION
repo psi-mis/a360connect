@@ -10,8 +10,19 @@ License: What license is it under?
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1
+imports: 
+    data.table,
+    dplyr,
+    httr,
+    jsonlite
+    plyr,
+    purrr,
+    tidyr
 Suggests: 
     httptest,
     testthat
 Depends: 
-    R (>= 2.10)
+    R (>= 2.10),
+    data.table,
+    httr,
+    jsonlite
