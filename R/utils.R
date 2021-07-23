@@ -32,4 +32,36 @@ check_for_authentication <- function(user = NULL, pass = NULL){
   list(user = user, pass = pass)
 }
 
+#' Generate a unique girl ID
+#'
+#' Generate a unique identifier for girls enrolled in the follow up program.
+#'
+#' \code{generate_uid} generates a random id of size 15 chars.
+#' @return A character string of size 15
+generate_girl_uid <- function(code_size = 14){
+  runif(1)
+  allowed_first_chars <- c(LETTERS, 0:9)
+  allowed_middle_letters <- LETTERS
+  allowed_last_chars <- 0:9
+  first_part <- sample(allowed_first_chars, 6)
+  middle_part <- sample(allowed_middle_letters, 4)
+  last_part <- sample(allowed_last_chars, code_size - 10)
+  uid <- paste(
+    paste0(first_part, collapse = ""),
+    paste0(middle_part, collapse = ""),
+    paste0(last_part, collapse = ""),
+    sep = "-"
+  )
+  uid
+}
+
+generate_uid <- function(code_size = 11){
+  runif(1)
+  allowedLetters <- c(LETTERS, letters)
+  allowedChars <- c(LETTERS, letters, 0:9)
+  firstChar <- sample(allowedLetters, 1)
+  otherChars <- sample(allowedChars, codeSize - 1)
+  uid <- paste(c(firstChar, paste(otherChars, sep = "", collapse = "")), sep = "", collapse = "")
+  uid
+}
 
