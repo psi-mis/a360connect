@@ -2,12 +2,13 @@
 #'
 #' @param events A dataframe.
 #' @return A dataframe of the latest unique record
+#' @importFrom data.table as.data.table rbindlist
 find_latest_event <- function(events){
   events_dt <- data.table::as.data.table(events)
   events_filtered <- purrr::map(events_dt$`Girl ID`, function(x){
 
     # filter by girl ID
-    events_dt_by_id <- events_dt[`Girl ID` == x]
+    events_dt_by_id <- events_dt[`Girl ID` == x,]
 
     # Get the new unique client; first time users
     if (nrow(events_dt_by_id) == 1 && has_phone_number(events_dt_by_id)){
@@ -29,18 +30,29 @@ find_latest_event <- function(events){
           dt <- events_dt_by_id1[girl_name == x]
 
           if (nrow(dt) == 1 && has_phone_number(dt)){ # return row if has a phone number
-            dt_unique  <- dplyr::select(dt, -`girl_name`)
+            #dt_unique  <- dplyr::select(dt, -`girl_name`)
+            dt_unique <- dt[, -"girl_name"]
             dt_unique
           }else if (nrow(dt) > 1 && has_phone_number(dt)){ # if more than on e rwo is returned, overwrite the Phone Numbers
-            phone_number <- dt[!is.na(`Phone Number`)]$`Phone Number`
+            phone_number <- dt[!is.na(`Phone Number`), `Phone Number` ]
             if (length(phone_number) > 1){
               phone_number <- paste(phone_number, collapse = " | ")
             }
-            dt <- dplyr::mutate(dt, `Phone Number` = rep(phone_number, nrow(dt)))
-            dt <- dplyr::arrange(dt, desc(as.Date(`Date of Service Provision`)))
-            dt <- dplyr::select(dt, -`girl_name`)
-            dt_latest <- dt[1,]
-            dt_latest
+            # Overwrite the phone number
+            #dt <- dplyr::mutate(dt, `Phone Number` = rep(phone_number, nrow(dt)))
+            dt <- dt[,`Phone Number`:= rep(phone_number, .N)]
+
+            # sort the Date of Service Provision in descending order
+            #dt <- dplyr::arrange(dt, desc(as.Date(`Date of Service Provision`)))
+            dt<- dt[order(-`Date of Service Provision`)]
+
+            # deselect the girl_name
+            # and return the first item
+            #dt <- dplyr::select(dt, -`girl_name`)
+            dt <- dt[, -"girl_name"]
+            dt[1,]
+            # dt_latest <- dt[1,]
+            # dt_latest
           } else {
             NULL
           }
@@ -62,12 +74,24 @@ find_latest_event <- function(events){
 
   })
 
-  events_filtered
+  latest <- rbindlist(events_filtered)
+  latest <- unique(latest)
+  latest <- latest[nchar(`Phone Number`) >= 10] # remove the 0s or 1s
+  latest
 }
 
+#' Check if the any record has a phone number
+#'
+#' @importFrom data.table is.data.table .N
+#' @return Logical
 has_phone_number <- function(events){
-  any(!is.na(events$`Phone Number`) & nchar(events$`Phone Number`) >= 10)
+  if (is.data.table(events)){
+    events[!is.na(events$`Phone Number`) & nchar(events$`Phone Number`) >= 10, .N > 0]
+  }else{
+    any(!is.na(events$`Phone Number`) & nchar(events$`Phone Number`) >= 10)
+  }
 }
+
 
 has_duplicate_names <- function(events){
   girl_names <- tolower(
