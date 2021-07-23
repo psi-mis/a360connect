@@ -14,6 +14,7 @@
 #'@importFrom httr GET content authenticate
 #'@importFrom utils URLencode
 #'@return A S3 object containing a content, endpoint and the parsed response.
+#'@export
 pull_events <- function(baseurl = NULL, program_id = NULL,
                         startDate = NULL, endDate = NULL,
                         user = NULL, pass = NULL,
@@ -41,6 +42,7 @@ pull_events <- function(baseurl = NULL, program_id = NULL,
   )
 }
 
+#' @importFrom utils str
 print.pull_events <- function(x, ...){
   cat(sprintf("PSI-MIS <%s>\n", x$endpoint))
   str(x$content, list.len = 5, vec.len = 1)
