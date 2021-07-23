@@ -83,4 +83,7 @@ a360ngdata2[(!is.na(`Phone Number`) & nchar(`Phone Number`) >= 10)] %>% nrow(.)
 #' ----------------------> if phone number is present, overwrite in the column & sort by date of service provision
 #' -----------------------------> return the latest
 #' filter repeat users
+a360ngdata_dt <- data.table::as.data.table(a360ngdata)
+
+a360ngdata_dt[!is.na(`Phone Number`) & nchar(`Phone Number`) == 100, .N > 0]
 
