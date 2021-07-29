@@ -17,8 +17,8 @@ des$name <- short_name
 
 #usethis::use_data(des, internal = T, overwrite = T)
 
-a360ngdata <- readxl::read_xlsx("/Users/isaiahnyabuto/Documents/Workspace/A360/NG Data/A360 Data/current_program_a360_full_data-edited.xlsx",
-                                sheet = "current_program_a360_full_data", col_types = "text")
+a360ngdata <- readr::read_csv("/Users/isaiahnyabuto/Documents/Workspace/A360/NG Data/current_program_a360_full_data.csv",
+                                col_types = paste0(rep("c",43), collapse = ""))
 
 
 a360ngdata %>% names(.)
