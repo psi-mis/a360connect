@@ -2,9 +2,12 @@
 % Please edit documentation in R/utils.R
 \name{generate_girl_uid}
 \alias{generate_girl_uid}
+\alias{generate_uid}
 \title{Generate a unique girl ID}
 \usage{
 generate_girl_uid(code_size = 14)
+
+generate_uid(code_size = 11)
 }
 \value{
 A character string of size 15
