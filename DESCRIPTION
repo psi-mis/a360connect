@@ -20,9 +20,12 @@ imports:
     tidyr
 Suggests: 
     httptest,
-    testthat
+    testthat,
+    knitr,
+    rmarkdown
 Depends: 
     R (>= 2.10),
     data.table,
     httr,
     jsonlite
+VignetteBuilder: knitr
