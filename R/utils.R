@@ -65,3 +65,26 @@ generate_uid <- function(code_size = 11){
   uid
 }
 
+generate_random_code <- function(){
+  runif(1)
+  allowed_chars <- 0:9
+  paste(
+    "a360connect-db",
+    paste(sample(allowed_chars, 4), collapse = "", sep = ""),
+    sep = "-"
+  )
+}
+
+required_fields <- c("event","eventDate","orgUnit","orgUnitName","status","Name of girl","Girl ID","Age of Girl",
+                     "Phone Number","Provider's name","Newly registered client","Visit Type (First/Follow-up/Repeat)",
+                     "Date of Service Provision","Method taken up", "Follow-up scheduled (date)","Date of follow up call")
+
+has_data_values <- function(events = NULL){
+  if (!is.null(events) && "dataValues" %in% names(events)){
+    TRUE
+  } else{
+    FALSE
+  }
+}
+
+has_key <- function(dt) ifelse(any(names(dt) == "KEY"), TRUE, FALSE)
