@@ -37,7 +37,9 @@ check_for_authentication <- function(user = NULL, pass = NULL){
 #' Generate a unique identifier for girls enrolled in the follow up program.
 #'
 #' \code{generate_uid} generates a random id of size 15 chars.
+#' @importFrom stats runif
 #' @return A character string of size 15
+#' @name generate_girl_uid
 generate_girl_uid <- function(code_size = 14){
   runif(1)
   allowed_first_chars <- c(LETTERS, 0:9)
@@ -55,6 +57,9 @@ generate_girl_uid <- function(code_size = 14){
   uid
 }
 
+#' Generate object unique ID
+#'
+#' @rdname generate_girl_uid
 generate_uid <- function(code_size = 11){
   runif(1)
   allowedLetters <- c(LETTERS, letters)
@@ -88,3 +93,44 @@ has_data_values <- function(events = NULL){
 }
 
 has_key <- function(dt) ifelse(any(names(dt) == "KEY"), TRUE, FALSE)
+
+#' Check if the any record has a phone number
+#'
+#' @importFrom data.table is.data.table .N
+#' @return Logical
+has_phone_number <- function(events){
+  if (is.data.table(events)){
+    events[!is.na(events$`Phone Number`) & nchar(events$`Phone Number`) >= 10, .N > 0]
+  }else{
+    any(!is.na(events$`Phone Number`) & nchar(events$`Phone Number`) >= 10)
+  }
+}
+
+#' Check if any record has a duplicate name
+#' @param events A data.frame object
+#' @return Logical
+has_duplicate_names <- function(events){
+  girl_names <- tolower(
+    stringr::str_squish(events$`Name of girl`)
+  )
+  any(duplicated(girl_names))
+}
+
+review_names <- function(x){
+  x <- stringr::str_to_lower(x)
+  x <- stringr::str_squish(x)
+  x <- stringr::str_trim(x, side = "both")
+  x
+}
+
+has_KEY <- function(evts){
+  if ("KEY" %in% names(evts)){
+    if (is.data.table(evts)){
+      evts[!is.na(`KEY`), .N > 0]
+    } else {
+      any(!is.na(evts$`KEY`))
+    }
+  } else{
+    FALSE
+  }
+}
