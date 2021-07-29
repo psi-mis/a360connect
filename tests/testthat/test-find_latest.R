@@ -11,24 +11,19 @@ test_that("Find latest events returns unique event", {
   expect_equal(d[, .N], data.table::uniqueN(d, by = "Phone Number"))
 })
 
-test_that("has_phone_number checks for presence of any phone number",{
-  d2 <- as.data.table(testd)
-  d2 <- d2[is.na(`Phone Number`),]
-  expect_equal(has_phone_number(testd), T)
-  expect_equal(has_phone_number(d2), F)
+
+test_that("Find latest unique event identifies the latest unique event from a df of events with duplicated names",{
+  d <- lapply(testd$`Girl ID`, function(x) testd[testd$`Girl ID` == x,])
+  d1 <- find_latest_unique_event(d[[415]])
+  d1 <- data.table::rbindlist(d1)
+  expect_equal(d1$`Phone Number`, "7080401100")
+
+  d2 <- d[[415]]
+  d2$`Phone Number` <- c("7080401100","8080401100", NA, NA)
+  d2$`Date of Service Provision` <- c("2019-06-17", "2019-06-18", "2019-06-19", "2019-06-28")
+  d3 <- find_latest_unique_event(d2[-1,])
+  d3 <- rbindlist(d3)
+  expect_equal(d3$`Date of Service Provision`, "2019-06-28")
 })
 
 
-test_that("Add latest events works as expected",{
-  d_init <- googlesheets4::gs4_get("1D2tl8uD27YiPwcmd0Yqrzz6X8oGEbJ6KBl82l-nXQWA")
-  # update
-  d <- add_latest_events(testd, sheet = "Sheet1", ssid = "1D2tl8uD27YiPwcmd0Yqrzz6X8oGEbJ6KBl82l-nXQWA")
-  d_after <- googlesheets4::gs4_get("1D2tl8uD27YiPwcmd0Yqrzz6X8oGEbJ6KBl82l-nXQWA")
-  # overwrite
-  d2_init <- googlesheets4::gs4_get("1D2tl8uD27YiPwcmd0Yqrzz6X8oGEbJ6KBl82l-nXQWA")
-  d2 <- add_latest_events(testd, sheet = "Sheet1", ssid = "1D2tl8uD27YiPwcmd0Yqrzz6X8oGEbJ6KBl82l-nXQWA", overwrite = T)
-  d2_after <- googlesheets4::gs4_get("1D2tl8uD27YiPwcmd0Yqrzz6X8oGEbJ6KBl82l-nXQWA")
-  expect_equal(add_latest_events(), NULL)
-  expect_equal(d_init$sheets$grid_rows < d_after$sheets$grid_rows, T)
-  expect_equal(d2_init$sheets$grid_rows > d2_after$sheets$grid_rows, T)
-})
