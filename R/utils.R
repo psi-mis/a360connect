@@ -134,3 +134,27 @@ has_KEY <- function(evts){
     FALSE
   }
 }
+
+is_empty <- function(x) vapply(x, is.null, logical(1))
+
+#' Review search results
+#'
+#' Combine results and return unique events
+#'
+#' @param evts A list of data.table, the events return from search
+#' @importFrom data.table rbindlist
+#' @return reviewed result, A data.table if
+review_search_result <- function(evts){
+
+  # is not empty
+  evts <- evts[!is_empty(evts)]
+
+  if (length(evts) > 0){
+    evts <- data.table::rbindlist(evts)
+    evts <- unique(evts)
+    evts
+  } else{
+    NULL
+  }
+}
+
