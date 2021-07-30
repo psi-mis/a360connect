@@ -2,19 +2,21 @@
 % Please edit documentation in R/event_find_latest.R
 \name{find_latest_event}
 \alias{find_latest_event}
-\title{Find latest events}
+\title{Find latest events for follow up}
 \usage{
-find_latest_event(events)
+find_latest_event(evnt, from = NULL, ...)
 }
 \arguments{
-\item{events}{A dataframe.}
+\item{evnt}{A data frame with the events to search from.}
+
+\item{from}{Specify a googlespreadsheet ID, where to search the events.}
+
+\item{...}{Additional params passed to the \link[googlesheets4]{read_sheet}.}
 }
 \value{
-A data frame of the latest unique record
+the latest unique record, a data.table.
 }
 \description{
-Identify the latest events for follow-up.
-}
-\details{
-Reviews an entire list of events and identify the latets unique events.
+Find the latest events for follow-up through a systematic search of events
+using the girl ID, name and phone number.
 }
