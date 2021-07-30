@@ -1,130 +1,61 @@
-#' Find latest events
+#' Find latest events for follow up
 #'
-#' Identify the latest events for follow-up.
+#' Find the latest events for follow-up through a systematic search of events
+#' using the girl ID, name and phone number.
 #'
-#' Reviews an entire list of events and identify the latets unique events.
 #'
-#' @param events A dataframe.
-#' @return A data frame of the latest unique record
+#' @param evnt A data frame with the events to search from.
+#' @param from Specify a google spreadsheet ID, where to search the events.
+#' @param ... Additional params passed to the \link[googlesheets4]{read_sheet}.
+#' @return the latest unique record, a data.table.
 #' @importFrom data.table as.data.table rbindlist
 #' @export
-find_latest_event <- function(events){
-  events_dt <- data.table::as.data.table(events)
-  events_filtered <- purrr::map(events_dt$`Girl ID`, function(x){
+find_latest_event <- function(evnt, from = NULL, ...){
 
-    # filter by girl ID
-    events_dt_by_id <- events_dt[`Girl ID` == x,]
-
-    # Get the new unique client; first time users
-    if (nrow(events_dt_by_id) == 1 && has_phone_number(events_dt_by_id)){
-      events_dt_by_id
-    }else if (nrow(events_dt_by_id) > 1 && has_phone_number(events_dt_by_id)){ # Treat others as duplicates
-      # check duplicates by girl name & harmonize the records
-      # return unique or the latest client record
-      if (has_duplicate_names(events_dt_by_id)){
-        # add the unique names (girl_id)
-        events_dt_by_id1 <- dplyr::mutate(events_dt_by_id,
-                                    girl_name = tolower(
-                                      stringr::str_squish(events_dt_by_id$`Name of girl`)
-                                    )
-                                  )
-
-        # filter by unique names
-        events_dt_by_id1 <- purrr::map_df(unique(events_dt_by_id1$girl_name), function(x){
-          #dt <- dplyr::filter(events_dt_by_id1, girl_name == x)
-          dt <- events_dt_by_id1[girl_name == x]
-
-          if (nrow(dt) == 1 && has_phone_number(dt)){ # return row if has a phone number
-            #dt_unique  <- dplyr::select(dt, -`girl_name`)
-            dt_unique <- dt[, -"girl_name"]
-            dt_unique
-          }else if (nrow(dt) > 1 && has_phone_number(dt)){ # if more than on e rwo is returned, overwrite the Phone Numbers
-            phone_number <- dt[!is.na(`Phone Number`) & nchar(`Phone Number`) >= 10, `Phone Number` ]
-            if (length(phone_number) > 1){
-              phone_number <- paste(phone_number, collapse = " | ")
-            }
-            # Overwrite the phone number
-            #dt <- dplyr::mutate(dt, `Phone Number` = rep(phone_number, nrow(dt)))
-            dt <- dt[,`Phone Number`:= rep(phone_number, .N)]
-
-            # sort the Date of Service Provision in descending order
-            #dt <- dplyr::arrange(dt, desc(as.Date(`Date of Service Provision`)))
-            dt<- dt[order(-`Date of Service Provision`)]
-
-            # deselect the girl_name
-            # and return the first item
-            #dt <- dplyr::select(dt, -`girl_name`)
-            dt <- dt[, -"girl_name"]
-            dt[1,]
-            # dt_latest <- dt[1,]
-            # dt_latest
-          } else {
-            NULL
-          }
-
-        })
-
-        events_dt_by_id1
-
-      }else if (!has_duplicate_names(events_dt_by_id) && has_phone_number(events_dt_by_id)){
-        # these are unique clients, its just by coincidence they have similar names
-        # filter those with phone numbers
-        events_dt_by_id[!is.na(`Phone Number`) & nchar(`Phone Number`) >= 10,]
-      }else{
-        NULL
-      }
-    }else {
-      NULL
-    }
-
-  })
-
-  latest <- rbindlist(events_filtered)
-  latest <- unique(latest)
-  latest <- latest[nchar(`Phone Number`) >= 10] # remove the 0s or 1s
-
-  # check for any duplicates by Phone number
-  latest_events <- lapply(latest$`Phone Number`, function(x){
-    latest_event <- latest[`Phone Number` == x]
-
-    if (latest_event[,.N] == 1){
-      latest_event
-    } else if (latest_event[,.N] > 1){
-      latest_event[order(-`Date of Service Provision`)]
-      latest_event[1,]
-    } else{
-      NULL
-    }
-  })
-
-  latest_events <- rbindlist(latest_events)
-  latest_events <- unique(latest_events)
-  latest_events
-}
-
-#' Search
-#'
-#' @importFrom data.table is.data.table
-latest_events <- function(evts, has_key = F){
-  if (!is.data.table(evts)){
-    evts <- as.data.table(evts)
+  if (!is.null(from)){
+    sheet_params <- list(...)
+    evnt <- googlesheets4::read_sheet(ss = from, col_types = "c", sheet_params)
   }
 
-  evt_ls <- lapply(evts$`Girl ID`, function(x){
-    # filter by girl id
-    evts_by_id <- evts[`Girl ID` == x,]
+  evnt <- data.table::as.data.table(evnt)
 
-    if (evts_by_id[,.N] == 1 && has_phone_number(evts_by_id)){
+  evnt <- find_latest_by_name_and_id(evnt)
+
+  evnt <- find_latest_by_phone_number(evnt)
+
+  evnt
+
+}
+
+#' Find latest events by girl id and name
+#'
+#' A systematic search of events to identify the latest unique events for follow
+#' up using the girl ID and name.
+#'
+#' @param evnt A data.frame or data.table object with the events to follow up.
+#'
+#' @importFrom data.table is.data.table
+#' @return the latest unique events if present.
+find_latest_by_name_and_id <- function(evnt){
+  if (!is.data.table(evnt)){
+    evnt <- as.data.table(evnt)
+  }
+
+  evnt_ls <- lapply(evnt$`Girl ID`, function(x){
+    # filter by girl id
+    evnt_by_id <- evnt[`Girl ID` == x,]
+
+    if (evnt_by_id[,.N] == 1 && has_phone_number(evnt_by_id)){
       # return the unique and latest
-      evts_by_id
-    } else if (evts_by_id[, .N] > 1 && has_phone_number(evts_by_id)){
+      evnt_by_id
+    } else if (evnt_by_id[, .N] > 1 && has_phone_number(evnt_by_id)){
       # check for duplicates names and return latest
-      if (has_duplicate_names(evts_by_id) && has_phone_number(evts_by_id)){
+      if (has_duplicate_names(evnt_by_id) && has_phone_number(evnt_by_id)){
         # get latest unique events
-        find_latest_unique_event(evts_by_id)
-      } else if (!has_duplicate_names(evts_by_id) && has_phone_number()) {
+        find_latest_by_name(evnt_by_id)
+      } else if (!has_duplicate_names(evnt_by_id) && has_phone_number(evnt_by_id)) {
         # these are unique clients, its by coincidence they have similar names
-        evts_by_id[!is.na(`Phone Number`) & nchar(`Phone Number`) >= 10,]
+        evnt_by_id[!is.na(`Phone Number`) & nchar(`Phone Number`) >= 10,]
       } else {
         NULL
       }
@@ -135,23 +66,26 @@ latest_events <- function(evts, has_key = F){
 
   })
 
+  review_search_result(evnt_ls)
+
 }
 
 
-#' Identify latest unique events for follow up
+#' Find latest events by name
 #'
-#' Identify latest unique events from events with duplicated names
-#' @param evts the duplicated events, A data.frame object.
+#' Identify the latest unique events from events with duplicated names.
+#'
+#' @param evnt the duplicated events, A data.frame object.
 #' @return a list with latest unique event
-find_latest_unique_event <- function(evts){
-  if (!is.data.table(evts)){
-    evts <- as.data.table(evts)
+find_latest_by_name <- function(evnt){
+  if (!is.data.table(evnt)){
+    evnt <- as.data.table(evnt)
   }
 
-  evts <- evts[, girl_name := review_names(`Name of girl`)]
+  evnt <- evnt[, girl_name := review_names(`Name of girl`)]
 
-  evts_ls <- lapply(unique(evts$girl_name), function(x){
-    dt <- evts[girl_name == x,]
+  evnt_ls <- lapply(unique(evnt$girl_name), function(x){
+    dt <- evnt[girl_name == x,]
     if (dt[, .N] == 1 && has_phone_number(dt)){
       dt[, -"girl_name"]
     } else if (dt[, .N] > 1 && has_phone_number(dt)){
@@ -165,15 +99,15 @@ find_latest_unique_event <- function(evts){
 
       # copy keys
       if (has_KEY(dt)){
-        KEY <- dt[is.na(`KEY`), `KEY`]
-        if (length(KEY) > 1){
+        key <- dt[!is.na(`KEY`), `KEY`]
+        if (length(key) > 1){
           stop(sprintf(
             "Multiple KEYS found! \n
-            <%s>", paste(KEY, collapse = "; ")
+            <%s>", paste(key, collapse = "; ")
           ), call. = F)
         }
         # overwrite key
-        dt <- dt[, KEY := rep(KEY, .N)]
+        dt <- dt[, KEY := rep(key, .N)]
       }
 
       # sort the Date of Service Provision in descending order
@@ -185,12 +119,30 @@ find_latest_unique_event <- function(evts){
     }
   })
 
-  evts_ls
+  review_search_result(evnt_ls)
+
 }
 
+#' Find latest events by phone number
+#'
+#' @param evnt A data.frame or data.table object containing the latest events.
+#' @return the latest events by phone number.
+find_latest_by_phone_number <- function(evnt){
+  if (!is.data.table(evnt)){
+    evnt <- data.table::as.data.table(evnt)
+  }
+  evnt_ls <- lapply(evnt$`Phone Number`, function(x){
+    d <- evnt[`Phone Number` == x]
 
-
-
-
-
+    if (d[,.N] == 1){
+      d
+    } else if (d[,.N] > 1){
+      d <- d[order(-`Date of Service Provision`)]
+      d[1,]
+    } else{
+      NULL
+    }
+  })
+  review_search_result(evnt_ls)
+}
 
