@@ -3,8 +3,8 @@ testd <- readr::read_csv("./test_data/current_program_a360_full_data.csv",
 
 testd <- testd[1:1000,]
 
-test_that("Find latest events returns unique event", {
-  d <- find_latest_event(testd)
+test_that("Find latest evnt returns unique evnt", {
+  d <- find_latest_evnt(testd)
   # girl_names <- stringr::str_squish(d$`Name of girl`)
   # girl_names <- stringr::str_to_lower(girl_names)
   # girl_names <- stringr::str_trim(girl_names)
@@ -12,7 +12,7 @@ test_that("Find latest events returns unique event", {
 })
 
 
-test_that("Find latest by name identifies the latest unique event from a df of events with duplicated names",{
+test_that("Find latest by name identifies the latest unique evnt from a df of evnt with duplicated names",{
   # test for no duplicates
   d <- lapply(testd$`Girl ID`, function(x) testd[testd$`Girl ID` == x,])
   d1 <- find_latest_by_name(d[[415]])
@@ -64,7 +64,7 @@ test_that("Find latest by name returns NULL when no follow up data is found", {
 })
 
 
-# Test latest events
+# Test latest evnt
 test_that("Find latest by name and id checks for non duplicates having a phone number", {
   d <- lapply(testd$`Girl ID`, function(x) testd[testd$`Girl ID` == x,])
   d <- d[[415]]
@@ -75,7 +75,7 @@ test_that("Find latest by name and id checks for non duplicates having a phone n
 
 })
 
-test_that("Find latest by name and id returns NULL if the events are missing a phone number", {
+test_that("Find latest by name and id returns NULL if the evnt are missing a phone number", {
   d <- lapply(testd$`Girl ID`, function(x) testd[testd$`Girl ID` == x,])
   d <- d[[415]]
   d$`Phone Number` <- c(NA, NA, NA, NA)
@@ -85,7 +85,7 @@ test_that("Find latest by name and id returns NULL if the events are missing a p
 })
 
 
-# Test latest events by phone number
+# Test latest evnt by phone number
 test_that("Find latest by phone number returns the latest unique record by phone number", {
   d <- lapply(testd$`Girl ID`, function(x) testd[testd$`Girl ID` == x,])
   d <- d[[415]]

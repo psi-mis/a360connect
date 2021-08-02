@@ -1,16 +1,15 @@
-#' Find latest events for follow up
+#' Find latest evnt for follow up
 #'
-#' Find the latest events for follow-up through a systematic search of events
+#' Find the latest evnt for follow-up through a systematic search of evnt
 #' using the girl ID, name and phone number.
 #'
-#'
-#' @param evnt A data frame with the events to search from.
-#' @param from Specify a google spreadsheet ID, where to search the events.
+#' @param evnt A data frame with the evnt to search from.
+#' @param from Specify a google spreadsheet ID, where to search the evnt.
 #' @param ... Additional params passed to the \link[googlesheets4]{read_sheet}.
 #' @return the latest unique record, a data.table.
 #' @importFrom data.table as.data.table rbindlist
 #' @export
-find_latest_event <- function(evnt, from = NULL, ...){
+find_latest_evnt <- function(evnt, from = NULL, ...){
 
   if (!is.null(from)){
     sheet_params <- list(...)
@@ -27,15 +26,15 @@ find_latest_event <- function(evnt, from = NULL, ...){
 
 }
 
-#' Find latest events by girl id and name
+#' Find latest evnt by girl id and name
 #'
-#' A systematic search of events to identify the latest unique events for follow
+#' A systematic search of evnt to identify the latest unique evnt for follow
 #' up using the girl ID and name.
 #'
-#' @param evnt A data.frame or data.table object with the events to follow up.
+#' @param evnt A data.frame or data.table object with the evnt to follow up.
 #'
 #' @importFrom data.table is.data.table
-#' @return the latest unique events if present.
+#' @return the latest unique evnt if present.
 find_latest_by_name_and_id <- function(evnt){
   if (!is.data.table(evnt)){
     evnt <- as.data.table(evnt)
@@ -51,7 +50,7 @@ find_latest_by_name_and_id <- function(evnt){
     } else if (evnt_by_id[, .N] > 1 && has_phone_number(evnt_by_id)){
       # check for duplicates names and return latest
       if (has_duplicate_names(evnt_by_id) && has_phone_number(evnt_by_id)){
-        # get latest unique events
+        # get latest unique evnt
         find_latest_by_name(evnt_by_id)
       } else if (!has_duplicate_names(evnt_by_id) && has_phone_number(evnt_by_id)) {
         # these are unique clients, its by coincidence they have similar names
@@ -71,12 +70,12 @@ find_latest_by_name_and_id <- function(evnt){
 }
 
 
-#' Find latest events by name
+#' Find latest evnt by name
 #'
-#' Identify the latest unique events from events with duplicated names.
+#' Identify the latest unique evnt from evnt with duplicated names.
 #'
-#' @param evnt the duplicated events, A data.frame object.
-#' @return a list with latest unique event
+#' @param evnt the duplicated evnt, A data.frame object.
+#' @return a list with latest unique evnt
 find_latest_by_name <- function(evnt){
   if (!is.data.table(evnt)){
     evnt <- as.data.table(evnt)
@@ -123,10 +122,10 @@ find_latest_by_name <- function(evnt){
 
 }
 
-#' Find latest events by phone number
+#' Find latest evnt by phone number
 #'
-#' @param evnt A data.frame or data.table object containing the latest events.
-#' @return the latest events by phone number.
+#' @param evnt A data.frame or data.table object containing the latest evnt.
+#' @return the latest evnt by phone number.
 find_latest_by_phone_number <- function(evnt){
   if (!is.data.table(evnt)){
     evnt <- data.table::as.data.table(evnt)

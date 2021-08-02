@@ -1,17 +1,17 @@
-#' Modify Event Endpoint
+#' Modify evnt Endpoint
 #'
-#' Code to modify Event API Endpoint
-#' @inheritParams pull_events
+#' Code to modify evnt API Endpoint
+#' @inheritParams get_evnt
 #' @return url
 #' @importFrom utils URLencode
-modify_events_endpoint <- function(baseurl = NULL,program_id = NULL,
+modify_evnt_endpoint <- function(baseurl = NULL,program_id = NULL,
                                    startDate = NULL, endDate = NULL,
                                    paging = TRUE, pageSize = 50){
   if (!is.null(baseurl) && !is.null(program_id)){
     if (!paging){
-      url <- paste0(baseurl, "api/events?paging=false&program=", program_id)
+      url <- paste0(baseurl, "api/evnt?paging=false&program=", program_id)
     }else{
-      url <- paste0(baseurl, "api/events?paging=true&totalPages=true&program=", program_id, "&pageSize=", pageSize)
+      url <- paste0(baseurl, "api/evnt?paging=true&totalPages=true&program=", program_id, "&pageSize=", pageSize)
     }
 
     if (!is.null(startDate)){
