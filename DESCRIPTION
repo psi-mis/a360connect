@@ -14,14 +14,16 @@ imports:
     data.table,
     dplyr,
     httr,
-    jsonlite
+    jsonlite,
     plyr,
     purrr,
+    readr,
     tidyr
 Suggests: 
     httptest,
     testthat,
     knitr,
+    pbapply,
     rmarkdown
 Depends: 
     R (>= 2.10),
@@ -31,3 +33,5 @@ Depends:
     httr,
     jsonlite
 VignetteBuilder: knitr
+Roxygen: list(markdown = TRUE)
+
