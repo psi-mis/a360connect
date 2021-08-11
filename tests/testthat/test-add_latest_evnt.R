@@ -1,9 +1,10 @@
 testd <- readr::read_csv("./test_data/current_program_a360_full_data.csv",
-                         col_types = paste0(rep("c",43), collapse = ""))
+  col_types = paste0(rep("c", 43), collapse = "")
+)
 
-testd <- testd[1:1000,]
+testd <- testd[1:1000, ]
 
-test_that("Add latest evnt works as expected",{
+test_that("Add latest evnt works as expected", {
   d_init <- googlesheets4::gs4_get("1D2tl8uD27YiPwcmd0Yqrzz6X8oGEbJ6KBl82l-nXQWA")
   # update
   d <- add_latest_evnt(testd, sheet = "Sheet1", ssid = "1D2tl8uD27YiPwcmd0Yqrzz6X8oGEbJ6KBl82l-nXQWA")

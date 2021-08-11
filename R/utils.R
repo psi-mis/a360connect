@@ -3,29 +3,32 @@ timeout <- httr::timeout(60)
 
 #' @importFrom httr http_type http_error content status_code
 #' @importFrom jsonlite fromJSON
-check_for_response <- function(res = NULL){
-  if (!is.null(res)){
-    if (http_type(res) != "application/json"){
+check_for_response <- function(res = NULL) {
+  if (!is.null(res)) {
+    if (http_type(res) != "application/json") {
       stop("psi-mis did not return json", call. = F)
     }
     parsed <- fromJSON(content(res, "text"), simplifyVector = F)
-    if (http_error(res)){
+    if (http_error(res)) {
       stop(
-        sprintf("psi-mis request failed [%s] \n%s\n<%s>",
-                status_code(res),
-                parsed$message,
-                parsed$url), call. = F
+        sprintf(
+          "psi-mis request failed [%s] \n%s\n<%s>",
+          status_code(res),
+          parsed$message,
+          parsed$url
+        ),
+        call. = F
       )
     }
   }
 }
 
-check_for_authentication <- function(user = NULL, pass = NULL){
-  if (is.null(user) && is.null(pass)){
+check_for_authentication <- function(user = NULL, pass = NULL) {
+  if (is.null(user) && is.null(pass)) {
     user <- Sys.getenv("C_USER")
     pass <- Sys.getenv("C_PASS")
 
-    if (user == "" || pass == ""){
+    if (user == "" || pass == "") {
       stop("a360connect: no authenication key found, please specify")
     }
   }
@@ -40,7 +43,7 @@ check_for_authentication <- function(user = NULL, pass = NULL){
 #' @importFrom stats runif
 #' @return A character string of size 15
 #' @name generate_girl_uid
-generate_girl_uid <- function(code_size = 14){
+generate_girl_uid <- function(code_size = 14) {
   runif(1)
   allowed_first_chars <- c(LETTERS, 0:9)
   allowed_middle_letters <- LETTERS
@@ -60,7 +63,7 @@ generate_girl_uid <- function(code_size = 14){
 #' Generate object unique ID
 #'
 #' @rdname generate_girl_uid
-generate_uid <- function(code_size = 11){
+generate_uid <- function(codeSize = 11) {
   runif(1)
   allowedLetters <- c(LETTERS, letters)
   allowedChars <- c(LETTERS, letters, 0:9)
@@ -70,7 +73,7 @@ generate_uid <- function(code_size = 11){
   uid
 }
 
-generate_random_code <- function(){
+generate_random_code <- function() {
   runif(1)
   allowed_chars <- 0:9
   paste(
@@ -80,14 +83,16 @@ generate_random_code <- function(){
   )
 }
 
-required_fields <- c("event","eventDate","orgUnit","orgUnitName","status","Name of girl","Girl ID","Age of Girl",
-                     "Phone Number","Provider's name","Newly registered client","Visit Type (First/Follow-up/Repeat)",
-                     "Date of Service Provision","Method taken up", "Follow-up scheduled (date)","Date of follow up call")
+required_fields <- c(
+  "event", "eventDate", "orgUnit", "orgUnitName", "status", "Name of girl", "Girl ID", "Age of Girl",
+  "Phone Number", "Provider's name", "Newly registered client", "Visit Type (First/Follow-up/Repeat)",
+  "Date of Service Provision", "Method taken up", "Follow-up scheduled (date)", "Date of follow up call"
+)
 
-has_data_values <- function(events = NULL){
-  if (!is.null(events) && "dataValues" %in% names(events)){
+has_data_values <- function(events = NULL) {
+  if (!is.null(events) && "dataValues" %in% names(events)) {
     TRUE
-  } else{
+  } else {
     FALSE
   }
 }
@@ -98,10 +103,10 @@ has_key <- function(dt) ifelse(any(names(dt) == "KEY"), TRUE, FALSE)
 #'
 #' @importFrom data.table is.data.table .N
 #' @return Logical
-has_phone_number <- function(events){
-  if (is.data.table(events)){
+has_phone_number <- function(events) {
+  if (is.data.table(events)) {
     events[!is.na(events$`Phone Number`) & nchar(events$`Phone Number`) >= 10, .N > 0]
-  }else{
+  } else {
     any(!is.na(events$`Phone Number`) & nchar(events$`Phone Number`) >= 10)
   }
 }
@@ -109,28 +114,28 @@ has_phone_number <- function(events){
 #' Check if any record has a duplicate name
 #' @param events A data.frame object
 #' @return Logical
-has_duplicate_names <- function(events){
+has_duplicate_names <- function(events) {
   girl_names <- tolower(
     stringr::str_squish(events$`Name of girl`)
   )
   any(duplicated(girl_names))
 }
 
-review_names <- function(x){
+review_names <- function(x) {
   x <- stringr::str_to_lower(x)
   x <- stringr::str_squish(x)
   x <- stringr::str_trim(x, side = "both")
   x
 }
 
-has_KEY <- function(evts){
-  if ("KEY" %in% names(evts)){
-    if (is.data.table(evts)){
+has_KEY <- function(evts) {
+  if ("KEY" %in% names(evts)) {
+    if (is.data.table(evts)) {
       evts[!is.na(`KEY`), .N > 0]
     } else {
       any(!is.na(evts$`KEY`))
     }
-  } else{
+  } else {
     FALSE
   }
 }
@@ -144,17 +149,42 @@ is_empty <- function(x) vapply(x, is.null, logical(1))
 #' @param evts A list of data.table, the events return from search
 #' @importFrom data.table rbindlist
 #' @return reviewed result, A data.table if
-review_search_result <- function(evts){
+review_search_result <- function(evts) {
 
   # is not empty
   evts <- evts[!is_empty(evts)]
 
-  if (length(evts) > 0){
+  if (length(evts) > 0) {
     evts <- data.table::rbindlist(evts)
     evts <- unique(evts)
     evts
-  } else{
+  } else {
     NULL
   }
 }
 
+#' Parse an API response
+#'
+#' @param res the API response
+#' @param url the endpoint url
+#' @param simplify_vector passed to \link{jsonlite::fromJSON}
+#' @param name class name of the S3 object
+#' @return S3 object
+parse_api_response <- function(res, url, simplify_vector = F, name = NULL) {
+  d <- content(res, "text")
+  d <- fromJSON(d, simplifyVector = simplify_vector)
+
+
+  if (is.null(name)) {
+    name <- "psi-mis_api"
+  }
+
+  structure(
+    list(
+      content = d,
+      endpoint = url,
+      response = res
+    ),
+    class = name
+  )
+}

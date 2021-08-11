@@ -25,7 +25,7 @@ library(a360connect)
 
 a360ngdata <- data.table::fread("/Users/isaiahnyabuto/Documents/Packages/a360connect/tests/testthat/test_data/current_program_a360_full_data.csv")
 
-latest_events <- find_latest_evnt(a360ngdata[1:1000,])
+latest_events <- find_latest(a360ngdata[1:1000,])
 
 latest_events
 ```

@@ -7,7 +7,7 @@
 \usage{
 generate_girl_uid(code_size = 14)
 
-generate_uid(code_size = 11)
+generate_uid(codeSize = 11)
 }
 \value{
 A character string of size 15

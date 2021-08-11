@@ -21,9 +21,9 @@ get_evnt(
 
 \item{program_id}{the program ID.}
 
-\item{startDate}{the date in `YYYY-MM-DD` format.}
+\item{startDate}{the date in \code{YYYY-MM-DD} format.}
 
-\item{endDate}{the date in `YYYY-MM-DD` format.}
+\item{endDate}{the date in \code{YYYY-MM-DD} format.}
 
 \item{user}{string. the user account used in the pass key.}
 
@@ -32,7 +32,7 @@ get_evnt(
 \item{paging}{logical. Whether to page the results or not. By default, the
 return evnt are paged.}
 
-\item{pageSize}{numeric. indicating the size of the page. default is `50`.}
+\item{pageSize}{numeric. indicating the size of the page. default is \code{50}.}
 }
 \value{
 A S3 object containing a content, endpoint and the parsed response.

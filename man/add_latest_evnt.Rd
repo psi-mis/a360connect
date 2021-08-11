@@ -2,7 +2,7 @@
 % Please edit documentation in R/add_latest_evnt.R
 \name{add_latest_evnt}
 \alias{add_latest_evnt}
-\title{Add the latest evnt to a database}
+\title{Add the latest event to a database}
 \usage{
 add_latest_evnt(
   latest_evnt = NULL,
@@ -14,25 +14,25 @@ add_latest_evnt(
 )
 }
 \arguments{
-\item{latest_evnt}{A data.frame object.}
+\item{latest_evnt}{A data.frame or data.table object with latest events.}
 
-\item{ssid}{the ID of a google spreadsheet.}
+\item{ssid}{ID of a google spreadsheet.}
 
-\item{sheet}{the name of the sheet}
+\item{sheet}{The name of the sheet in the google spreadsheet to write.}
 
-\item{new_sheet}{logical. Create a new sheet? default is FALSE, to append
-data to an existing spreadsheet.}
+\item{new_sheet}{Logical. Should a new sheet be created? by default, the
+latest events will be appended on the existing sheet.}
 
 \item{overwrite}{logical. Do you want to overwrite data on the current sheet?
 default is FALSE, to append data to an existing sheet.}
 
 \item{...}{Additional params passed to the spreadsheet's endpoint
-\ref{googlespreadsheet4::gs4_create}.}
+\code{\link[googlesheets4:gs4_create]{gs4_create()}}}
 }
 \value{
-
+The input ssid, as an instance of
+\code{\link[googlesheets4:as_sheets_id]{as_sheets_id()}}
 }
 \description{
-Stores the latest evnt to a database. Currently, it stores the records in a
-google spreadsheet.
+Stores the latest event to a google spreadsheet database.
 }
