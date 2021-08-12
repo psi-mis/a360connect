@@ -2,13 +2,15 @@
 % Please edit documentation in R/transform_evnt.R
 \name{transform_evnt}
 \alias{transform_evnt}
-\title{Transform evnt data values}
+\title{Transform event}
 \usage{
 transform_evnt(evnt)
 }
 \arguments{
-\item{evnt}{A data.frame object.}
+\item{evnt}{A data.frame object with events to transform.}
 }
 \description{
-Transform evnt data values
+Transform event data values from long to wide, and selects the required
+fields for follow-up. In case the events are missing data values, only the
+required fields are selected.
 }
