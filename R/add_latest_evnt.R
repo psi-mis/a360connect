@@ -17,14 +17,21 @@
 #' @return The input ssid, as an instance of
 #'   \code{\link[googlesheets4:as_sheets_id]{as_sheets_id()}}
 #' @export
-add_latest_evnt <- function(latest_evnt = NULL, ssid = NULL, sheet = NULL, new_sheet = F, overwrite = F, ...) {
+add_latest_evnt <- function(latest_evnt = NULL,
+                            ssid = NULL,
+                            sheet = NULL,
+                            new_sheet = F,
+                            overwrite = F,
+                            ...) {
   if (!is.null(latest_evnt)) {
     latest_evnt <- data.table::as.data.table(latest_evnt)
     # Add evnt KEYs if missing
     if (!has_key(latest_evnt)) {
       # Add key
-      latest_evnt <- latest_evnt[, KEY := sapply(rep(14, .N), generate_girl_uid)]
-      latest_evnt <- latest_evnt[, TEI := sapply(rep(11, .N), generate_uid)]
+      latest_evnt <- latest_evnt[,
+                                 KEY := sapply(rep(14, .N), generate_girl_uid)]
+      latest_evnt <- latest_evnt[,
+                                 TEI := sapply(rep(11, .N), generate_uid)]
     }
   }
 
@@ -34,17 +41,82 @@ add_latest_evnt <- function(latest_evnt = NULL, ssid = NULL, sheet = NULL, new_s
     } else {
       # append to an existing sheet
       if (!is.null(sheet)) {
-        ssd <- googlesheets4::sheet_append(ss = ssid, latest_evnt, sheet = sheet)
+        ssd <- googlesheets4::sheet_append(ss = ssid,
+                                           latest_evnt, sheet = sheet)
       } else {
         ssd <- googlesheets4::sheet_append(ss = ssid, latest_evnt, sheet = 1)
       }
     }
   } else if (!is.null(latest_evnt) && is.null(ssid)) {
     if (new_sheet) {
-      ssd <- googlesheets4::gs4_create(name = generate_random_code(), ..., sheets = latest_evnt)
+      ssd <- googlesheets4::gs4_create(name = generate_random_code(),
+                                       ..., sheets = latest_evnt)
     }
   } else {
     ssd <- NULL
   }
   ssd
+}
+
+#' Generate a unique girl ID
+#'
+#' Generate a unique girl ID to identify the events added to a database.
+#'
+#' Randomly generates a unique code, with three parts each separated with an
+#' hyphen. XXXXXX-XYXY-00000.
+#'
+#' @param code_size Integer, size of the uid. default 14.
+#'
+#' @importFrom stats runif
+#' @return A character string, the unique girl ID
+#' @name generate_girl_uid
+generate_girl_uid <- function(code_size = 14) {
+  runif(1)
+  allowed_first_chars <- c(LETTERS, 0:9)
+  allowed_middle_letters <- LETTERS
+  allowed_last_chars <- 0:9
+  first_part <- sample(allowed_first_chars, 6)
+  middle_part <- sample(allowed_middle_letters, 4)
+  last_part <- sample(allowed_last_chars, code_size - 10)
+  uid <- paste(
+    paste0(first_part, collapse = ""),
+    paste0(middle_part, collapse = ""),
+    paste0(last_part, collapse = ""),
+    sep = "-"
+  )
+  uid
+}
+
+#' Generate a unique DHIS2 type ID
+#'
+#' Randomly generates a unique DHIS2 uid.
+#'
+#' @param code_size Integer, size of the uid. default 14.
+#' @return A character string, the unique ID
+generate_uid <- function(code_size = 11) {
+  runif(1)
+  allowed_letters <- c(LETTERS, letters)
+  allowed_chars <- c(LETTERS, letters, 0:9)
+  first_char <- sample(allowed_letters, 1)
+  other_chars <- sample(allowed_chars, code_size - 1)
+  uid <- paste(c(first_char, paste(other_chars,
+                                   sep = "",
+                                   collapse = "")),
+               sep = "", collapse = "")
+  uid
+}
+
+#' Generate a random spreadsheet name
+#'
+#' Generate a random spreadsheet name to uniquely identify the automatically
+#' generated sheets. The sheet names starts with a360connect-db, and are then
+#' followed with a random code.
+generate_random_code <- function() {
+  runif(1)
+  allowed_chars <- 0:9
+  paste(
+    "a360connect-db",
+    paste(sample(allowed_chars, 4), collapse = "", sep = ""),
+    sep = "-"
+  )
 }
