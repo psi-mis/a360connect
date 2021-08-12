@@ -1,12 +1,16 @@
-#' Transform evnt data values
+#' Transform event
 #'
-#' @param evnt A data.frame object.
+#' Transform event data values from long to wide, and selects the required
+#' fields for follow-up. In case the events are missing data values, only the
+#' required fields are selected.
+#'
+#' @param evnt A data.frame object with events to transform.
 #' @importFrom dplyr any_of
 #' @export
 transform_evnt <- function(evnt) {
   if (has_data_values(evnt)) {
-    # flatten the data values
-    new_datavalues <- purrr::map(evnt$dataValues, function(x) {
+    # flatten the data values to select the required fields
+    new_datavalues <- pb_lapply(evnt$dataValues, function(x) {
       if (!is.null(x) && length(x) > 0) {
         datavalues <- tidyr::pivot_wider(x, id_cols = dataElement, names_from = dataElement, values_from = value)
       } else {
@@ -15,12 +19,9 @@ transform_evnt <- function(evnt) {
     })
     evnt$dataValues2 <- new_datavalues
 
-    # # remove any nulls
-    # evnt <- evnt[!vapply(evnt$dataValues2, is.null, logical(1))]
-
-    # Add the evnt, date, and, status, orgUnit id and name into the data values
+    # Add the event, date, and, status, orgUnit id and name into the data values to easily identify the records
     evnt_split <- split(evnt, as.numeric(row.names(evnt)))
-    transformed_datavalues <- purrr::map(evnt_split, function(x) {
+    transformed_datavalues <- pb_lapply(evnt_split, function(x) {
       if (!is.null(x$dataValues2[[1]])) {
         dplyr::mutate(x$dataValues2[[1]],
           orgUnit = x$orgUnit,
@@ -50,3 +51,9 @@ transform_evnt <- function(evnt) {
     dplyr::select(evnt, any_of(required_fields))
   }
 }
+
+required_fields <- c(
+  "event", "eventDate", "orgUnit", "orgUnitName", "status", "Name of girl", "Girl ID", "Age of Girl",
+  "Phone Number", "Provider's name", "Newly registered client", "Visit Type (First/Follow-up/Repeat)",
+  "Date of Service Provision", "Method taken up", "Follow-up scheduled (date)", "Date of follow up call"
+)
