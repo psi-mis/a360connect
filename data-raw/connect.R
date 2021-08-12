@@ -70,15 +70,21 @@ httr::PUT(
 
 
 ##' Map the Methods to option codes
-opts_map <- httr::GET(paste0(baseurl, "api/29/optionSets/MujeDcPigJK.json?fields=options[id,name,code]")) %>%
-  httr::content(., "text") %>%
-  fromJSON(.) %>%
-  .$options
+# opts_map <- httr::GET(paste0(baseurl, "api/29/optionSets/MujeDcPigJK.json?fields=options[id,name,code]")) %>%
+#   httr::content(., "text") %>%
+#   fromJSON(.) %>%
+#   .$options
+#
+# teis$`Method taken up` <- plyr::mapvalues(teis$`Method taken up`,
+#   from = opts_map$name,
+#   to = opts_map$code, warn_missing = F
+# )
 
-teis$`Method taken up` <- plyr::mapvalues(teis$`Method taken up`,
-  from = opts_map$name,
-  to = opts_map$code, warn_missing = F
-)
+# update the new mappings
+# d <- a360connect::add_latest_evnt(teis,
+#                                   ssid = "10fvg8YVW7VTLe3PUolUZZO5Ayjtl2TG8IUVRrIb84bs",
+#                                   sheet = "latest_events",
+#                                   overwrite = T)
 
 ## Filter those on short term
 teis <- dplyr::filter(teis, `Method taken up` %in% c(
