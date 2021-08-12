@@ -1,6 +1,11 @@
 ua <- httr::user_agent("https://github.com/psi-mis/a360connect")
 timeout <- httr::timeout(60)
 
+#' Review an API response
+#'
+#' Check that API returned a `JSON` element without any errrors.
+#'
+#' @param res A DHIS2 response object.
 #' @importFrom httr http_type http_error content status_code
 #' @importFrom jsonlite fromJSON
 check_for_response <- function(res = NULL) {
@@ -23,6 +28,14 @@ check_for_response <- function(res = NULL) {
   }
 }
 
+#' Review API authentication
+#'
+#' Check that the API pass key is specified. It looks for the API key from the
+#' `r` `environment`, if not supplied, otherwise throws an error.
+#'
+#' @param user A DHIS2 user account to authenticate.
+#' @param pass Password of the DHIS2 Account.
+#' @return A list with API key (user and pass) if found.
 check_for_authentication <- function(user = NULL, pass = NULL) {
   if (is.null(user) && is.null(pass)) {
     user <- Sys.getenv("C_USER")
@@ -34,60 +47,6 @@ check_for_authentication <- function(user = NULL, pass = NULL) {
   }
   list(user = user, pass = pass)
 }
-
-#' Generate a unique girl ID
-#'
-#' Generate a unique identifier for girls enrolled in the follow up program.
-#'
-#' \code{generate_uid} generates a random id of size 15 chars.
-#' @importFrom stats runif
-#' @return A character string of size 15
-#' @name generate_girl_uid
-generate_girl_uid <- function(code_size = 14) {
-  runif(1)
-  allowed_first_chars <- c(LETTERS, 0:9)
-  allowed_middle_letters <- LETTERS
-  allowed_last_chars <- 0:9
-  first_part <- sample(allowed_first_chars, 6)
-  middle_part <- sample(allowed_middle_letters, 4)
-  last_part <- sample(allowed_last_chars, code_size - 10)
-  uid <- paste(
-    paste0(first_part, collapse = ""),
-    paste0(middle_part, collapse = ""),
-    paste0(last_part, collapse = ""),
-    sep = "-"
-  )
-  uid
-}
-
-#' Generate object unique ID
-#'
-#' @rdname generate_girl_uid
-generate_uid <- function(codeSize = 11) {
-  runif(1)
-  allowedLetters <- c(LETTERS, letters)
-  allowedChars <- c(LETTERS, letters, 0:9)
-  firstChar <- sample(allowedLetters, 1)
-  otherChars <- sample(allowedChars, codeSize - 1)
-  uid <- paste(c(firstChar, paste(otherChars, sep = "", collapse = "")), sep = "", collapse = "")
-  uid
-}
-
-generate_random_code <- function() {
-  runif(1)
-  allowed_chars <- 0:9
-  paste(
-    "a360connect-db",
-    paste(sample(allowed_chars, 4), collapse = "", sep = ""),
-    sep = "-"
-  )
-}
-
-required_fields <- c(
-  "event", "eventDate", "orgUnit", "orgUnitName", "status", "Name of girl", "Girl ID", "Age of Girl",
-  "Phone Number", "Provider's name", "Newly registered client", "Visit Type (First/Follow-up/Repeat)",
-  "Date of Service Provision", "Method taken up", "Follow-up scheduled (date)", "Date of follow up call"
-)
 
 has_data_values <- function(events = NULL) {
   if (!is.null(events) && "dataValues" %in% names(events)) {
@@ -188,3 +147,19 @@ parse_api_response <- function(res, url, simplify_vector = F, name = NULL) {
     class = name
   )
 }
+
+#' Adapt lapply function
+#'
+#' Adapt lapply function to show progress bar, and provide a default fallback if
+#' pbapply is not loaded.
+#'
+#' @noRd
+pb_lapply <- function(x, fun, ...) {
+  if (requireNamespace("pbapply", quietly = TRUE)) {
+    pbapply::pblapply(x, fun, ...)
+  } else {
+    lapply(x, fun, ...)
+  }
+}
+
+clear_names <- function(x) paste0(x)
