@@ -13,3 +13,13 @@
   ))
   invisible(NULL)
 }
+
+utils::globalVariables(c(
+  "KEY", "TEI", "girl_name",
+  "Name of girl", "Phone Number",
+  "Date of Service Provision",
+  "Girl ID", "..y", "attribute",
+  "Date of follow up call",
+  "orgUnit", "enrollments",
+  "dataElement", "value"
+))
