@@ -33,6 +33,8 @@ get_evnt(
 return evnt are paged.}
 
 \item{pageSize}{numeric. indicating the size of the page. default is \code{50}.}
+
+\item{...}{Additional params passed to \code{\link[httr:config]{httr::config()}}}
 }
 \value{
 A S3 object containing a content, endpoint and the parsed response.

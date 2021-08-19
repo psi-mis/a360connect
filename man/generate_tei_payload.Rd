@@ -4,10 +4,27 @@
 \alias{generate_tei_payload}
 \title{Generate TEI payload}
 \usage{
-generate_tei_payload(evnt)
+generate_tei_payload(
+  evnt,
+  tracked_entity_type = NULL,
+  tea = NULL,
+  tea_mapping = NULL,
+  is_a360connect_type = TRUE,
+  is_a360connect_enrollment_type = TRUE
+)
 }
 \arguments{
-\item{evnt}{A list of events to generate a payload.}
+\item{evnt}{A data.frame of events to generate a payload.}
+
+\item{tracked_entity_type}{DHIS2 ID, the type of tracked entity attribute.}
+
+\item{tea}{A vector, specifies the tracked attributes.}
+
+\item{tea_mapping}{A data.frame object containing the tracked entity attributes and their uids.}
+
+\item{is_a360connect_type}{Logical. Use this to bypass \code{a360connect} settings.}
+
+\item{is_a360connect_enrollment_type}{Logical, Use this to bypass \code{a360connect} settings.}
 }
 \value{
 A list, TEI payload

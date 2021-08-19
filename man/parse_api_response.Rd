@@ -11,7 +11,7 @@ parse_api_response(res, url, simplify_vector = F, name = NULL)
 
 \item{url}{the endpoint url}
 
-\item{simplify_vector}{passed to \link{jsonlite::fromJSON}}
+\item{simplify_vector}{passed to \code{\link[jsonlite:fromJSON]{jsonlite::fromJSON()}}}
 
 \item{name}{class name of the S3 object}
 }

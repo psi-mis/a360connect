@@ -11,9 +11,29 @@ import_teis(teis, strategy = c("create_and_update", "create", "update"), ...)
 
 create_and_update_teis(teis, ...)
 
-create_teis(teis, baseurl = NULL, user = NULL, pass = NULL)
+create_teis(
+  teis,
+  baseurl = NULL,
+  user = NULL,
+  pass = NULL,
+  tracked_entity_type = NULL,
+  tea = NULL,
+  tea_mapping = NULL,
+  is_a360connect_type = TRUE,
+  is_a360connect_enrollment_type = TRUE
+)
 
-update_teis(teis, baseurl = NULL, user = NULL, pass = NULL)
+update_teis(
+  teis,
+  baseurl = NULL,
+  user = NULL,
+  pass = NULL,
+  tracked_entity_type = NULL,
+  tea = NULL,
+  tea_mapping = NULL,
+  is_a360connect_type = TRUE,
+  is_a360connect_enrollment_type = TRUE
+)
 }
 \arguments{
 \item{teis}{A data.frame or data.table object containing a list of tracked
@@ -30,6 +50,16 @@ only three options are specified, \code{create_and_update}, \code{create} and
 \item{user}{DHIS2 User Account, used in the pass key.}
 
 \item{pass}{Password of the user account, used in the pass key.}
+
+\item{tracked_entity_type}{DHIS2 ID, the type of tracked entity attribute.}
+
+\item{tea}{A vector, specifies the tracked attributes.}
+
+\item{tea_mapping}{A data.frame object containing the tracked entity attributes and their uids.}
+
+\item{is_a360connect_type}{Logical. Use this to bypass \code{a360connect} settings.}
+
+\item{is_a360connect_enrollment_type}{Logical, Use this to bypass \code{a360connect} settings.}
 }
 \value{
 An S3 object with a DHIS2 response, API endpoint and content of the
