@@ -48,6 +48,11 @@ check_for_authentication <- function(user = NULL, pass = NULL) {
   list(user = user, pass = pass)
 }
 
+#' Check if an event has data values
+#'
+#' @param events A data.frame or data table object. Events to search.
+#' @return logical.
+#' @noRd
 has_data_values <- function(events = NULL) {
   if (!is.null(events) && "dataValues" %in% names(events)) {
     TRUE
@@ -56,12 +61,19 @@ has_data_values <- function(events = NULL) {
   }
 }
 
+#' Does the event have any key?
+#'
+#' @param dt A data.frame or data table object. Events to search
+#' @return logical.
+#' @noRd
 has_key <- function(dt) ifelse(any(names(dt) == "KEY"), TRUE, FALSE)
 
 #' Check if the any record has a phone number
 #'
+#' @param events A data.frame or data table object. Events to search.
 #' @importFrom data.table is.data.table .N
 #' @return Logical
+#' @noRd
 has_phone_number <- function(events) {
   if (is.data.table(events)) {
     events[!is.na(events$`Phone Number`) & nchar(events$`Phone Number`) >= 10, .N > 0]
@@ -126,7 +138,7 @@ review_search_result <- function(evts) {
 #'
 #' @param res the API response
 #' @param url the endpoint url
-#' @param simplify_vector passed to \link{jsonlite::fromJSON}
+#' @param simplify_vector passed to [jsonlite::fromJSON()]
 #' @param name class name of the S3 object
 #' @return S3 object
 parse_api_response <- function(res, url, simplify_vector = F, name = NULL) {
@@ -163,3 +175,59 @@ pb_lapply <- function(x, fun, ...) {
 }
 
 clear_names <- function(x) paste0(x)
+
+is_tei_payload <- function(payload){
+  if (all(
+    c("trackedEntityType","trackedEntityInstance",
+      "orgUnit","attributes","enrollments") %in% names(payload))){
+    TRUE
+  } else{
+    FALSE
+  }
+}
+
+has_incident_date <- function(df){
+  if ("incident_date" %in% names(df)){
+    TRUE
+  } else {
+    FALSE
+  }
+}
+
+has_enrollment_date <- function(df){
+  if ("enrollment_date" %in% names(df)){
+    TRUE
+  } else {
+    FALSE
+  }
+}
+
+has_tei_ids <- function(df){
+  if ("TEI" %in% names(df)){
+    TRUE
+  } else {
+    FALSE
+  }
+}
+
+output_progress <- function(msg = "message", cli_fun = "cli_alert" , crayon_fun = NULL){
+
+  if (!is.null(crayon_fun)){
+    txt <- paste0(
+      "cli::", cli_fun, "(",
+      "crayon::", crayon_fun, "('",
+      msg,
+      "'))"
+    )
+  } else {
+    txt <- paste0(
+      "cli::", cli_fun, "('",
+      msg,
+      "')"
+    )
+  }
+
+  eval(parse(text = txt))
+}
+
+
