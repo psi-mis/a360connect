@@ -110,3 +110,33 @@ d <- vector("list", length(teis_split))
 for (i in seq_along(1:length(teis_split))) {
   d[[i]] <- a360connect::create_teis(baseurl, teis = teis_split[[i]])
 }
+
+
+# Update TEI uids on the google spreadhseet -------------------------------
+
+tei_pages <- pbapply::pblapply(1:129, function(x) {
+  paste0(
+    baseurl,
+    "api/29/trackedEntityInstances.json?ou=Mer51uyEWNI&ouMode=DESCENDANTS&fields=*&includeAllAttributes=True&program=QXuYEgGmTjX&pageSize=1000",
+    "&page=", x
+  )
+})
+
+all_teis <- httr::GET(
+  paste0(
+    baseurl,
+    "api/29/trackedEntityInstances.json?ou=Mer51uyEWNI&ouMode=DESCENDANTS&fields=*&includeAllAttributes=True&program=QXuYEgGmTjX&paging=false"
+  )
+)
+
+all_teis <- fromJSON(content(all_teis, "text"))
+
+tei_attr <- pbapply::pblapply(all_teis$trackedEntityInstances$trackedEntityInstance, function(x) {
+  tei <- all_teis$trackedEntityInstances[all_teis$trackedEntityInstances$trackedEntityInstance == x, ]
+  tei <- tidyr::pivot_wider(tei$attributes[[1]], names_from = displayName, values_from = value)
+  tei <- dplyr::filter(tei, !is.na(`CORE - Unique ID (UIC)`))
+  tei <- dplyr::mutate(tei, id = x)
+  dplyr::select(tei, c(id, `CORE - Unique ID (UIC)`))
+})
+
+tei_attr <- dplyr::bind_rows(tei_attr)
