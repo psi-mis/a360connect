@@ -11,6 +11,7 @@
 #' @param paging logical. Whether to page the results or not. By default, the
 #'  return evnt are paged.
 #' @param pageSize numeric. indicating the size of the page. default is `50`.
+#' @param ... Additional params passed to [httr::config()]
 #' @importFrom httr GET content authenticate
 #' @importFrom utils URLencode
 #' @return A S3 object containing a content, endpoint and the parsed response.
@@ -27,7 +28,10 @@ get_evnt <- function(baseurl = NULL, program_id = NULL,
 
   auth <- check_for_authentication(user, pass)
 
-  evnt_res <- GET(URLencode(url), ua, timeout, authenticate(auth$user, auth$pass), config = list(...))
+  evnt_res <- GET(URLencode(url),
+                  ua, timeout,
+                  authenticate(auth$user, auth$pass),
+                  config = list(...))
 
   check_for_response(evnt_res)
 

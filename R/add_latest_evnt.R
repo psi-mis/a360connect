@@ -28,10 +28,14 @@ add_latest_evnt <- function(latest_evnt = NULL,
     # Add evnt KEYs if missing
     if (!has_key(latest_evnt)) {
       # Add key
-      latest_evnt <- latest_evnt[,
-                                 KEY := sapply(rep(14, .N), generate_girl_uid)]
-      latest_evnt <- latest_evnt[,
-                                 TEI := sapply(rep(11, .N), generate_uid)]
+      latest_evnt <- latest_evnt[
+        ,
+        KEY := sapply(rep(14, .N), generate_girl_uid)
+      ]
+      latest_evnt <- latest_evnt[
+        ,
+        TEI := sapply(rep(11, .N), generate_uid)
+      ]
     }
   }
 
@@ -41,16 +45,20 @@ add_latest_evnt <- function(latest_evnt = NULL,
     } else {
       # append to an existing sheet
       if (!is.null(sheet)) {
-        ssd <- googlesheets4::sheet_append(ss = ssid,
-                                           latest_evnt, sheet = sheet)
+        ssd <- googlesheets4::sheet_append(
+          ss = ssid,
+          latest_evnt, sheet = sheet
+        )
       } else {
         ssd <- googlesheets4::sheet_append(ss = ssid, latest_evnt, sheet = 1)
       }
     }
   } else if (!is.null(latest_evnt) && is.null(ssid)) {
     if (new_sheet) {
-      ssd <- googlesheets4::gs4_create(name = generate_random_code(),
-                                       ..., sheets = latest_evnt)
+      ssd <- googlesheets4::gs4_create(
+        name = generate_random_code(),
+        ..., sheets = latest_evnt
+      )
     }
   } else {
     ssd <- NULL
@@ -100,9 +108,11 @@ generate_uid <- function(code_size = 11) {
   first_char <- sample(allowed_letters, 1)
   other_chars <- sample(allowed_chars, code_size - 1)
   uid <- paste(c(first_char, paste(other_chars,
-                                   sep = "",
-                                   collapse = "")),
-               sep = "", collapse = "")
+    sep = "",
+    collapse = ""
+  )),
+  sep = "", collapse = ""
+  )
   uid
 }
 
