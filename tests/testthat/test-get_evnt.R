@@ -7,8 +7,11 @@ with_mock_api(
     expect_identical(class(d$content$events), "data.frame")
     expect_type(d$endpoint, "character")
     expect_identical(class(d$response), "response")
+    expect_equal(d$response$status, 200L)
   })
 )
+
+
 
 test_that("evnt endpoint correctly generates the url", {
   expect_error(modify_evnt_endpoint())

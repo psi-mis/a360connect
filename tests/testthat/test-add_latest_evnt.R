@@ -17,3 +17,28 @@ test_that("Add latest evnt works as expected", {
   expect_equal(d_init$sheets$grid_rows[1] < d_after$sheets$grid_rows[1], T)
   expect_equal(d2_init$sheets$grid_rows[1] > d2_after$sheets$grid_rows[1], T)
 })
+
+test_that("Girl UID is generated correctly", {
+  girl_id <- generate_girl_uid()
+  expect_equal(nchar(girl_id), 16)
+  part <- strsplit(girl_id, split = "-")
+  expect_equal(nchar(part[[1]][1]),6)
+  expect_equal(nchar(part[[1]][2]),4)
+  expect_equal(nchar(part[[1]][3]),4)
+})
+
+test_that("DHIS2 Object UID is generated correctly", {
+  id <- generate_uid()
+  expect_equal(nchar(id), 11)
+  part <-strsplit(id,"")
+  expect_equal(part[[1]][1] %in% c(letters,LETTERS),TRUE)
+  expect_equal(all(part[[1]][2:11] %in% c(letters, LETTERS, 0:9)),TRUE)
+})
+
+
+test_that("Random file code is generated correctly", {
+  id <- generate_random_code()
+  expect_equal(nchar(id), 19)
+  part <-strsplit(id,"-")
+  expect_equal(nchar(part[[1]][3]),4)
+})
