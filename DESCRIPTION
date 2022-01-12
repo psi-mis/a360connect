@@ -28,7 +28,8 @@ Suggests:
     readr,
     plyr,
     stringr,
-    tidyr
+    tidyr,
+    covr
 Depends: 
     R (>= 2.10),
     data.table,
