@@ -7,16 +7,16 @@
 \alias{find_latest_by_phone_number}
 \title{Find latest}
 \usage{
-find_latest(evnt, from = NULL, ...)
+find_latest(events, from = NULL, ...)
 
-find_latest_by_name_and_id(evnt)
+find_latest_by_name_and_id(events)
 
-find_latest_by_name(evnt)
+find_latest_by_name(events)
 
-find_latest_by_phone_number(evnt)
+find_latest_by_phone_number(events)
 }
 \arguments{
-\item{evnt}{A data frame with events to find.}
+\item{events}{A data frame with events to find.}
 
 \item{from}{A google spreadsheet ID, where to search the events from.}
 

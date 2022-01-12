@@ -10,5 +10,5 @@ check_for_response(res = NULL)
 \item{res}{A DHIS2 response object.}
 }
 \description{
-Check that API returned a \code{JSON} element without any errrors.
+Check that API returned a \code{JSON} element without any errors.
 }

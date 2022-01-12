@@ -6,7 +6,7 @@ user <- Sys.getenv("C_USER")
 pass <- Sys.getenv("C_PASS")
 
 # start_capturing()
-# pull_events(baseurl = baseurl, program_id = "Ymn7RO0lkf7")
+# get_events(baseurl = baseurl, program_id = "Ymn7RO0lkf7")
 # stop_capturing()
 
 # get tei schema

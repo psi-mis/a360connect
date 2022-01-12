@@ -3,7 +3,7 @@ timeout <- httr::timeout(60)
 
 #' Review an API response
 #'
-#' Check that API returned a `JSON` element without any errrors.
+#' Check that API returned a `JSON` element without any errors.
 #'
 #' @param res A DHIS2 response object.
 #' @importFrom httr http_type http_error content status_code

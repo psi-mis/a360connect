@@ -1,0 +1,86 @@
+{
+    "httpStatus": "OK",
+    "httpStatusCode": 200,
+    "status": "OK",
+    "message": "Import was successful.",
+    "response": {
+        "responseType": "ImportSummaries",
+        "status": "SUCCESS",
+        "imported": 0,
+        "updated": 2,
+        "deleted": 0,
+        "ignored": 0,
+        "importOptions": {
+            "idSchemes": {
+
+            },
+            "dryRun": false,
+            "async": false,
+            "importStrategy": "CREATE_AND_UPDATE",
+            "mergeMode": "REPLACE",
+            "reportMode": "FULL",
+            "skipExistingCheck": false,
+            "sharing": false,
+            "skipNotifications": false,
+            "skipAudit": false,
+            "datasetAllowsPeriods": false,
+            "strictPeriods": false,
+            "strictDataElements": false,
+            "strictCategoryOptionCombos": false,
+            "strictAttributeOptionCombos": false,
+            "strictOrganisationUnits": false,
+            "requireCategoryOptionCombo": false,
+            "requireAttributeOptionCombo": false,
+            "skipPatternValidation": false,
+            "ignoreEmptyCollection": false,
+            "force": false,
+            "firstRowIsHeader": true,
+            "skipLastUpdated": true
+        },
+        "importSummaries": [
+            {
+                "responseType": "ImportSummary",
+                "status": "SUCCESS",
+                "importCount": {
+                    "imported": 0,
+                    "updated": 1,
+                    "ignored": 0,
+                    "deleted": 0
+                },
+                "reference": "dDaT2MCEXOY",
+                "href": "https://staging.psi-mis.org/api/trackedEntityInstances/dDaT2MCEXOY",
+                "enrollments": {
+                    "responseType": "ImportSummaries",
+                    "status": "SUCCESS",
+                    "imported": 0,
+                    "updated": 0,
+                    "deleted": 0,
+                    "ignored": 0,
+                    "total": 0
+                }
+            },
+            {
+                "responseType": "ImportSummary",
+                "status": "SUCCESS",
+                "importCount": {
+                    "imported": 0,
+                    "updated": 1,
+                    "ignored": 0,
+                    "deleted": 0
+                },
+                "reference": "P9a1jil15ra",
+                "href": "https://staging.psi-mis.org/api/trackedEntityInstances/P9a1jil15ra",
+                "enrollments": {
+                    "responseType": "ImportSummaries",
+                    "status": "SUCCESS",
+                    "imported": 0,
+                    "updated": 0,
+                    "deleted": 0,
+                    "ignored": 0,
+                    "total": 0
+                }
+            }
+        ],
+        "total": 2
+    }
+}
