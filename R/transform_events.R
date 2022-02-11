@@ -22,7 +22,7 @@ transform_events <- function(events) {
     new_datavalues <- pb_lapply(events$dataValues, function(x) {
       if (!is.null(x) && length(x) > 0) {
         # transform the data values only if a data element column exist
-        if ("dataElement" %in% c(x)){
+        if ("dataElement" %in% names(x)){
           datavalues <- tidyr::pivot_wider(x, id_cols = dataElement, names_from = dataElement, values_from = value)
         } else{
           NULL
