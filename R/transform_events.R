@@ -1,18 +1,33 @@
-#' Transform event
+#' Transform events
 #'
-#' Transform event data values from long to wide, and selects the required
-#' fields for follow-up. In case the events are missing data values, only the
+#' Transform events data values from long to wide, and selects the required
+#' fields for follow-up.
+#'
+#' @detail In case the events are missing data values, only the
 #' required fields are selected.
 #'
 #' @param events A data.frame object with events to transform.
 #' @importFrom dplyr any_of
 #' @export
 transform_events <- function(events) {
+
+  output_progress("transforming the events",
+                  cli_fun = "cli_h3")
+
   if (has_data_values(events)) {
     # flatten the data values to select the required fields
+    output_progress("flattening the data values",
+                    cli_fun = "cli_alert_info")
+
     new_datavalues <- pb_lapply(events$dataValues, function(x) {
       if (!is.null(x) && length(x) > 0) {
-        datavalues <- tidyr::pivot_wider(x, id_cols = dataElement, names_from = dataElement, values_from = value)
+        # transform the data values only if a data element column exist
+        if ("dataElement" %in% c(x)){
+          datavalues <- tidyr::pivot_wider(x, id_cols = dataElement, names_from = dataElement, values_from = value)
+        } else{
+          NULL
+        }
+
       } else {
         NULL
       }
@@ -20,6 +35,9 @@ transform_events <- function(events) {
     events$dataValues2 <- new_datavalues
 
     # Add the event, date, and, status, orgUnit id and name into the data values to easily identify the records
+    output_progress("adding relevant event details to the records",
+                    cli_fun = "cli_alert_info")
+
     events_split <- split(events, as.numeric(row.names(events)))
     transformed_datavalues <- pb_lapply(events_split, function(x) {
       if (!is.null(x$dataValues2[[1]])) {
