@@ -115,9 +115,10 @@ find_latest_by_name <- function(events) {
 
       dt <- dt[, `Phone Number` := rep(phone_number, .N)]
 
-      # copy keys
+      # copy keys including TEI IDs
       if (has_KEY(dt)) {
         key <- dt[!is.na(`KEY`), `KEY`]
+        tei <- dt[!is.na(`TEI`), `TEI`]
         if (length(key) > 1) {
           stop(sprintf(
             "Multiple KEYS found! \n
@@ -126,6 +127,7 @@ find_latest_by_name <- function(events) {
         }
         # overwrite key
         dt <- dt[, KEY := rep(key, .N)]
+        dt <- dt[, TEI := rep(tei, .N)]
       }
 
       # sort the Date of Service Provision in descending order
