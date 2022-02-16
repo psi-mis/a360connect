@@ -119,15 +119,10 @@ find_latest_by_name <- function(events) {
       if (has_KEY(dt)) {
         key <- dt[!is.na(`KEY`), `KEY`]
         tei <- dt[!is.na(`TEI`), `TEI`]
-        if (length(key) > 1) {
-          stop(sprintf(
-            "Multiple KEYS found! \n
-            <%s>", paste(key, collapse = "; ")
-          ), call. = F)
-        }
+
         # overwrite key
-        dt <- dt[, KEY := rep(key, .N)]
-        dt <- dt[, TEI := rep(tei, .N)]
+        dt <- dt[, KEY := rep(unique(key), .N)]
+        dt <- dt[, TEI := rep(unique(tei), .N)]
       }
 
       # sort the Date of Service Provision in descending order
