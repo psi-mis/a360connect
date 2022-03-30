@@ -11,25 +11,26 @@
 #' @param paging logical. Whether to page the results or not. By default, the
 #'  return events are paged.
 #' @param pageSize numeric. indicating the size of the page. default is `50`.
+#' @param pageNumber Numeric. Specifies the page number to be returned. default is page `1`.
 #' @param ... Additional params passed to [httr::config()]
-#' @importFrom httr GET content authenticate
+#' @importFrom httr GET content authenticate timeout
 #' @importFrom utils URLencode
 #' @return A S3 object containing a content, endpoint and the parsed response.
 #' @export
 get_events <- function(baseurl = NULL, program_id = NULL,
                      startDate = NULL, endDate = NULL,
                      user = NULL, pass = NULL,
-                     paging = TRUE, pageSize = 50, ...) {
+                     paging = TRUE, pageSize = 50, pageNumber = 1, ...) {
   url <- modify_events_endpoint(
     baseurl = baseurl, program_id = program_id,
     startDate = startDate, endDate = endDate,
-    paging = paging, pageSize = pageSize
+    paging = paging, pageSize = pageSize, pageNumber = pageNumber
   )
 
   auth <- check_for_authentication(user, pass)
 
   events_res <- GET(URLencode(url),
-                  ua, timeout,
+                  ua, timeout(1000),
                   authenticate(auth$user, auth$pass),
                   config = list(...))
 
@@ -54,12 +55,12 @@ print.get_events <- function(x, ...) {
 #' @importFrom utils URLencode
 modify_events_endpoint <- function(baseurl = NULL, program_id = NULL,
                                  startDate = NULL, endDate = NULL,
-                                 paging = TRUE, pageSize = 50) {
+                                 paging = TRUE, pageSize = 50, pageNumber = 1) {
   if (!is.null(baseurl) && !is.null(program_id)) {
     if (!paging) {
       url <- paste0(baseurl, "api/events.json?paging=false&program=", program_id)
     } else {
-      url <- paste0(baseurl, "api/events.json?paging=true&totalPages=true&program=", program_id, "&pageSize=", pageSize)
+      url <- paste0(baseurl, "api/events.json?paging=true&totalPages=true&program=", program_id, "&pageSize=", pageSize, "&page=", pageNumber)
     }
 
     if (!is.null(startDate)) {
