@@ -143,7 +143,7 @@ create_teis <- function(teis,
                   cli_fun = "cli_alert_info")
 
   httr::POST(url,
-    ua, timeout, authenticate(auth$user, auth$pass),
+    ua, timeout(1000), authenticate(auth$user, auth$pass),
     body = toJSON(
       list(
         trackedEntityInstances = payload
@@ -225,7 +225,7 @@ update_teis <- function(teis,
     auth <- check_for_authentication(user, pass)
 
     httr::PUT(url,
-      ua, timeout, authenticate(auth$user, auth$pass),
+      ua, timeout(1000), authenticate(auth$user, auth$pass),
       body = toJSON(
         parse_tei_payload(tei),
         auto_unbox = T
@@ -267,7 +267,7 @@ get_tei <- function(tei_id, baseurl = NULL, user = NULL, pass = NULL) {
   auth <- check_for_authentication(user, pass)
 
   res <- httr::GET(
-    paste0(baseurl, "api/trackedEntityInstances/", tei_id), ua, timeout,
+    paste0(baseurl, "api/trackedEntityInstances/", tei_id), ua, timeout(1000),
     authenticate(auth$user, auth$pass)
   )
 
@@ -280,14 +280,14 @@ get_tei <- function(tei_id, baseurl = NULL, user = NULL, pass = NULL) {
 #'
 #' @importFrom data.table data.table as.data.table
 #'
-#' @param evnt A data.frame of events to generate a payload.
+#' @param events A data.frame of events to generate a payload.
 #' @param tracked_entity_type DHIS2 ID, the type of tracked entity attribute.
 #' @param tea A vector, specifies the tracked attributes.
 #' @param tea_mapping A data.frame object containing the tracked entity attributes and their uids.
 #' @param is_a360connect_type Logical. Use this to bypass `a360connect` settings.
 #' @param is_a360connect_enrollment_type Logical, Use this to bypass `a360connect` settings.
 #' @return A list, TEI payload
-generate_tei_payload <- function(evnt,
+generate_tei_payload <- function(events,
                                  tracked_entity_type = NULL,
                                  tea = NULL,
                                  tea_mapping = NULL,
@@ -296,17 +296,17 @@ generate_tei_payload <- function(evnt,
   output_progress("generating tei payload",
                   cli_fun = "cli_h3")
 
-  if (!is.data.frame(evnt)){
-    stop("evnt must be a data.frame object", call. = F)
+  if (!is.data.frame(events)){
+    stop("events must be a data.frame object", call. = F)
   } else {
     # make the event a data.table, we will use this to easily filter by columns
     # & more efficiently compared to a df object.
-    evnt <- as.data.table(evnt)
+    events <- as.data.table(events)
   }
 
   if (is_a360connect_type){
-    if (!has_KEY(evnt)){
-      stop("evnt must have a special column,
+    if (!has_KEY(events)){
+      stop("events must have a special column,
            `KEY`, that uniquely identifys the events to generate TEIs", call. = F)
     }
   }
@@ -315,14 +315,14 @@ generate_tei_payload <- function(evnt,
     trackedEntityType = ifelse(!is.null(tracked_entity_type),
                                tracked_entity_type,
                                Sys.getenv("TRACKED_ENTITY_TYPE")),
-    orgUnit = evnt$orgUnit,
+    orgUnit = events$orgUnit,
     stringsAsFactors = F
   )
 
-  if (!has_tei_ids(evnt)){
-    stop("evnt must have a special column, `TEI`, with the TEI ids")
+  if (!has_tei_ids(events)){
+    stop("events must have a special column, `TEI`, with the TEI ids")
   } else {
-    tei$trackedEntityInstance <- evnt$TEI
+    tei$trackedEntityInstance <- events$TEI
   }
 
   # set attributes
@@ -332,7 +332,7 @@ generate_tei_payload <- function(evnt,
         attribute = tea,
         value = clear_names(
           sapply(tea, function(y) {
-            evnt[TEI == x, ..y]
+            events[TEI == x, ..y]
           })
         ), stringsAsFactors = F
       )
@@ -350,7 +350,7 @@ generate_tei_payload <- function(evnt,
         attribute = selected_tea,
         value = clear_names(
           sapply(selected_tea, function(y) {
-            evnt[TEI == x, ..y]
+            events[TEI == x, ..y]
           })
         ), stringsAsFactors = F
       )
@@ -371,7 +371,7 @@ generate_tei_payload <- function(evnt,
   if (!is_a360connect_enrollment_type) {
     # for generic use case
     tei$enrollments <- lapply(tei$trackedEntityInstance, function(x) {
-      dt <- evnt[TEI == x, ]
+      dt <- events[TEI == x, ]
 
       enrollment <- data.frame(
         orgUnit = dt[, orgUnit],
@@ -394,7 +394,7 @@ generate_tei_payload <- function(evnt,
   } else {
     # default to A360 connect use case
     tei$enrollments <- lapply(tei$trackedEntityInstance, function(x) {
-      dt <- evnt[TEI == x, ]
+      dt <- events[TEI == x, ]
 
       if (dt[, !is.na(`Date of follow up call`)]) {
         data.frame(
