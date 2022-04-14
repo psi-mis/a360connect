@@ -5,6 +5,11 @@
 
 <!-- badges: start -->
 
+[![Codecov test
+coverage](https://codecov.io/gh/psi-mis/a360connect/branch/master/graph/badge.svg)](https://codecov.io/gh/psi-mis/a360connect?branch=master)
+
+[![Lifecycle:
+stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
 <!-- badges: end -->
 
 The goal of a360connect is to integrate data from the A360 single events
