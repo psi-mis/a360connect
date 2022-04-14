@@ -1,33 +1,36 @@
----
-title: "Find the latest unique client for follow up"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Find-latest-unique-clients}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+--- title: "Find the latest unique client for follow up" 
+  output:rmarkdown::html_vignette vignette: >
+%\VignetteIndexEntry{Find-latest-unique-clients}
+%\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8} 
 ---
 
-Finding the latest unique client records is one of the first steps in determining the clients required for a followed up. The current A360 database combines both information captured during the first and the subsequent visit. Clients are identified by `Girl id` and their records are stored as single observation. It is therefore possible to find more than one client with the same `Girl ID`.
+## The challange
 
-To find the latest unique client record, we first identify all the A360 clients using the `Girl ID`. This will help to identify the unique clients from the possible duplicates. We then match the possible duplicates by `Name of Girl` and update the latest file in case there are any missing fields captured in the previous records.
+<!-- Nigeria A360 database combines information for both newly registered clients and -->
+<!-- clients coming for a second or n visit (repeat clients). Its possible to find more  -->
+<!-- than one client with the same girl id. The girl ID by itself is not unique -->
 
-Since the `girl id` and `name` could be duplicated as well, we use the `Phone Number` to confirm the uniqueness of the records and return the latest by `Date of Service Provision`. 
+<!-- information for both new and repeat clients generated from a single event. Its -->
+<!-- therefore possible to find more than one client with the same client ID. -->
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
+Finding the latest unique client records is one of the first steps in
+determining the clients required for a followed up. The current A360 database
+combines both information captured during the first and the subsequent visit.
+Clients are identified by `Girl id` and their records are stored as single
+observation. It is therefore possible to find more than one client with the same
+`Girl ID`.
+To find the latest unique client record, we first identify all the A360 clients
+using the `Girl ID`. This will help to identify the unique clients from the
+possible duplicates. We then match the possible duplicates by `Name of Girl` and
+update the latest file in case there are any missing fields captured in the
+previous records.
+Since the `girl id` and `name` could be duplicated as well, we use the `Phone
+Number` to confirm the uniqueness of the records and return the latest by `Date
+of Service Provision`.
+```{r, include = FALSE} knitr::opts_chunk$set( collapse = TRUE, comment = "#>" )
 ```
-
-```{r setup}
-library(a360connect)
-
-a360ngdata <- data.table::fread("/Users/isaiahnyabuto/Documents/Packages/a360connect/tests/testthat/test_data/current_program_a360_full_data.csv")
-
+```{r setup} library(a360connect)
+a360ngdata <-
+data.table::fread("/Users/isaiahnyabuto/Documents/Packages/a360connect/tests/testthat/test_data/current_program_a360_full_data.csv")
 latest_events <- find_latest(a360ngdata[1:1000,])
-
-latest_events
-```
-
-
+latest_events ```
