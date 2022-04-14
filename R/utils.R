@@ -1,5 +1,5 @@
 ua <- httr::user_agent("https://github.com/psi-mis/a360connect")
-timeout <- httr::timeout(60)
+timeout <- httr::timeout(2000)
 
 #' Review an API response
 #'
