@@ -5,7 +5,7 @@
 \title{Generate TEI payload}
 \usage{
 generate_tei_payload(
-  evnt,
+  events,
   tracked_entity_type = NULL,
   tea = NULL,
   tea_mapping = NULL,
@@ -14,7 +14,7 @@ generate_tei_payload(
 )
 }
 \arguments{
-\item{evnt}{A data.frame of events to generate a payload.}
+\item{events}{A data.frame of events to generate a payload.}
 
 \item{tracked_entity_type}{DHIS2 ID, the type of tracked entity attribute.}
 
