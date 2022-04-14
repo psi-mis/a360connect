@@ -8,9 +8,9 @@ pass <- Sys.getenv("C_PASS")
 # start_capturing()
 # get_events(baseurl = baseurl, program_id = "Ymn7RO0lkf7")
 # stop_capturing()
-
-# get tei schema
-
+#
+# # get tei schema
+#
 # start_capturing()
 #
 # res <- httr::GET(paste0(baseurl, "api/schemas/trackedEntityInstance.json"), authenticate(user,pass))

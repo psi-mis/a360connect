@@ -44,7 +44,7 @@ gsheetr::login_dhis2(baseurl,
 teis <- googlesheets4::read_sheet(ss = "10fvg8YVW7VTLe3PUolUZZO5Ayjtl2TG8IUVRrIb84bs", sheet = "latest_events")
 
 # remove invalid references (ou conflicts)
-teis <- dplyr::filter(teis, !orgUnit %in% c("yJYP26YnyZM", "ASJcs9yrY3x"))
+#teis <- dplyr::filter(teis, !orgUnit %in% c("yJYP26YnyZM", "ASJcs9yrY3x"))
 
 # Update the Program OUS
 program_d <- httr::GET(

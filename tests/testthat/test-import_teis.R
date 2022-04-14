@@ -27,17 +27,17 @@ test_that("Generate TEI paylads returns a correct tei payload", {
 
 test_that("TEI payload generation triggers the expected errors", {
   # when any other object other than a single data.frame is passed to it.
-  expect_error(generate_tei_payload(list(sample_teis)), "evnt must be a data.frame object")
+  expect_error(generate_tei_payload(list(sample_teis)), "events must be a data.frame object")
 
   test_d <- sample_teis[,1:5] # without KEY column
-  expect_error(generate_tei_payload(test_d), "evnt must have a special column,
+  expect_error(generate_tei_payload(test_d), "events must have a special column,
            `KEY`, that uniquely identifys the events to generate TEIs")
 
   sample_teis <- data.table::as.data.table(sample_teis)
   test_d <- sample_teis[, -"TEI"]
 
   expect_error(generate_tei_payload(test_d),
-               "evnt must have a special column, `TEI`, with the TEI ids")
+               "events must have a special column, `TEI`, with the TEI ids")
 })
 
 test_that("TEI payload can be generated from different tracked entity attributes & mapping file", {
