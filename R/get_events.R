@@ -58,9 +58,9 @@ modify_events_endpoint <- function(baseurl = NULL, program_id = NULL,
                                  paging = TRUE, pageSize = 50, pageNumber = 1) {
   if (!is.null(baseurl) && !is.null(program_id)) {
     if (!paging) {
-      url <- paste0(baseurl, "api/events.json?paging=false&program=", program_id)
+      url <- paste0(baseurl, "api/events.json?paging=false&fields=*&program=", program_id)
     } else {
-      url <- paste0(baseurl, "api/events.json?paging=true&totalPages=true&program=", program_id, "&pageSize=", pageSize, "&page=", pageNumber)
+      url <- paste0(baseurl, "api/events.json?paging=true&fields=*&totalPages=true&program=", program_id, "&pageSize=", pageSize, "&page=", pageNumber)
     }
 
     if (!is.null(startDate)) {
