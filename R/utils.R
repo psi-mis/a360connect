@@ -11,7 +11,8 @@ timeout <- httr::timeout(2000)
 check_for_response <- function(res = NULL) {
   if (!is.null(res)) {
     if (http_type(res) != "application/json") {
-      stop("psi-mis did not return json", call. = F)
+      stop(sprintf("psi-mis did not return json \n<%s>", res)
+        , call. = F)
     }
     parsed <- fromJSON(content(res, "text"), simplifyVector = F)
     if (http_error(res)) {
